@@ -1,0 +1,104 @@
+var capture;
+var eng = "Google US English";
+var ita = "Google italiano";
+var mic = new p5.AudioIn();
+var speech = new p5.Speech(ita);
+var rec = new p5.SpeechRec();
+rec.continuous = true;
+var result;
+var last;
+var angle = 0;
+var talk;
+
+speech.onStart = speechStarted;
+speech.onEnd = speechEnded;
+
+function preload() {
+  blockatiel = loadImage("cockatiel.jpg");
+  cockatiel = loadImage("cockatiel.jpg");
+  beak = loadImage("beak.png");
+}
+
+function setup() {
+  createCanvas(windowWidth, windowWidth*.5625);
+  angleMode(DEGREES);
+
+  mic.start();
+  rec.start();
+  speech.setPitch(2); //0.01 - 2
+  speech.setRate(1); //0.1 - 2
+
+	// capture = createCapture(VIDEO);
+	// capture.size(640, 480);　　
+	// capture.hide();
+}
+
+function draw() {
+  var w = width;
+  var h = height;
+  background(0);
+  noStroke();
+
+  // capture.loadPixels();
+  // camera = image(capture, 0, 0, 640, 480);
+
+  // w = 50;
+  // vol = mic.getLevel();
+  // translate(-width/2+w*2,-height/2+w*1.5);
+  // rotateX(0); rotateZ(0); rotateY(0);
+  // // rotateZ(frameCount * 0.01);
+  // texture(capture);
+  // // box(height/2.5+vol*1000);
+  // for (var i = 0; i < width+w; i += w*2) {
+  //   for (var j = 0; j < height+w; j += w*2) {
+  //     // translate(i,j,0)
+  //     push();
+  //     translate(i,j,0);
+  //     rotateX(frameCount*.01)
+  //     rotateY(frameCount*.01)
+  //     rotateZ(frameCount*.01)
+  //     box(w*2);
+  //     pop();
+  //   }
+  // }
+
+
+  image(cockatiel, 0, 0, w, h);
+  push();
+  // imageMode(CENTER);
+  translate(w*.328, h*.225)
+  rotate(angle*random(0,5));
+  becco = image(beak, -w*.328, -h*.225, w, h);
+  pop();
+
+// push();
+//   translate(-w*.328, -h*.225)
+//
+//   ellipse(w*.328,h*.225,5)
+// pop();
+  textAlign(CENTER, CENTER);
+  text("TALK WITH ME!", w*.8, h*.5)
+
+  fill(0);
+  textSize(40);
+
+  if (rec.resultString!=last) {
+    talk = speech.speak(rec.resultString);
+    last = rec.resultString;
+  }
+  if (rec.resultValue==true) {
+    text(rec.resultString.toUpperCase() + ".", 100, 100);
+  }
+}
+
+function speechStarted() {
+  angle = 5;
+}
+
+function speechEnded() {
+  angle = 0;
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowWidth*.5625);
+}
